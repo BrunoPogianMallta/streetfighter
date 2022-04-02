@@ -48,7 +48,7 @@ const player = new Fighter({
     },
     jump:{
         imageSrc: './img/ryu/ryu-pulando.png',
-        framesMax:3,
+        framesMax:6,
         image: new Image()
     },
     fall:{
