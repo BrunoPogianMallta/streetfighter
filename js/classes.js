@@ -143,6 +143,12 @@ class Sprite {
                         this.framesCurrent =0
                         }
                         break;
+                    case 'punchl':
+                        if(this.image !== this.sprites.punchl.image){
+                            this.image = this.sprites.punchl.image
+                            this.framesMax = this.sprites.punchl.framesMax
+                            this.framesCurrent = 0
+                        }
                     default:
                         break;
                 }

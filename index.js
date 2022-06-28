@@ -8,6 +8,15 @@ c.fillRect(0,0, canvas.width, canvas.height);
 
 const gravity = 0.7
 
+const fps = 25;
+function animate() {
+  // perform some animation task here
+
+  setTimeout(() => {
+    requestAnimationFrame(animate);
+  }, 1000 / fps);
+}
+
 const background = new Sprite({
     position: {
         x:0,
@@ -29,7 +38,7 @@ const player = new Fighter({
        x:0,
        y:0
    },
-   imageSrc: './img/ryu/ryu-parado.png',
+   imageSrc: './img/ryu',
    framesMax:6,
    scale:2,
    offset: {
@@ -46,6 +55,11 @@ const player = new Fighter({
         framesMax:6,
         image: new Image()
     },
+    walkingL:{
+        imageSrc:'./img/ryu/ryu-andando-left.png',
+        framesMax:6,
+        image: new Image()
+    },
     jump:{
         imageSrc: './img/ryu/ryu-pulando.png',
         framesMax:6,
@@ -57,20 +71,56 @@ const player = new Fighter({
    }
 })
 
+
 const enemy = new Fighter({
-    position: {
-        x:400,
-        y:100
+    position:{
+        x:-100,
+        y:0
+   },
+   velocity: {
+       x: 0,
+       y: 0
+   },
+   offset:{
+       x:0,
+       y:0
+   },
+   imageSrc:'./img/blanka' ,
+   framesMax: 6,
+   scale:2,
+   offset: {
+    x:-600,
+    y:1
+   },
+   sprites: {
+    idle:{
+        imageSrc: './img/blanka/blanka-paradoL.png',
+        framesMax:6,
     },
-velocity:{
-        x: 0,
-        y: 0
+    walking:{
+        imageSrc: './img/blanka/blanka-andando-l.png',
+        framesMax:8,
+        image: new Image()
     },
-color:'blue',
-offset:{
-    x:- 50,
-    y: 0
-}
+    walkingL:{
+        imageSrc:'./img/blanka/blanka-paradoL.png',
+        framesMax:6,
+        image: new Image()
+    },
+    jump:{
+        imageSrc: './img/blanka/blanka-paradoL.png',
+        framesMax:6,
+        image: new Image()
+    },
+    punchl:{
+        imageSrc:'./img/blanka/low-punch-l.png',
+        framesMax:3,
+        image: new Image()
+    },
+    fall:{
+
+    }
+   }
 })
 
 const keys = {
@@ -88,7 +138,10 @@ const keys = {
     },
     ArrowLeft:{
         pressed: false
-    }
+    },
+    socoLeve:{
+        pressed: false
+    },
 }
 
 function retangularColision({rectangle1,rectangle2}) {
@@ -135,7 +188,8 @@ function animate() {
     c.fillRect(0, 0, canvas.width, canvas.height)
     background.update()
     player.update()
-    // enemy.update()
+    enemy.update()
+    
     player.velocity.x = 0
     enemy.velocity.x = 0
     
@@ -143,7 +197,7 @@ function animate() {
 
 if(keys.a.pressed && player.lastKey === 'a'){
     player.velocity.x = -5
-    player.switchSprite('walking')
+    // player.switchSprite('walkingL')
 }else if(keys.d.pressed && player.lastKey === 'd'){
     player.velocity.x = 5
     player.switchSprite('walking')
@@ -157,8 +211,16 @@ if(player.velocity.y < 0){
 //enemy movement
 if(keys.ArrowLeft.pressed && enemy.lastKey === 'ArrowLeft'){
     enemy.velocity.x = -5
+    enemy.switchSprite('walking')
 }else if(keys.ArrowRight.pressed && enemy.lastKey === 'ArrowRight'){
     enemy.velocity.x = 5
+    enemy.switchSprite('walking')
+}else{
+    enemy.switchSprite('idle')
+}
+
+if(keys.socoLeve.pressed ){
+    enemy.switchSprite('punchl')
 }
 
 //detect colision
@@ -171,8 +233,8 @@ if(retangularColision({rectangle1: player,rectangle2: enemy})&&
     document.querySelector('#enemyHealth').style.width = enemy.health+'%'
 }
 if(retangularColision({
-    rectangle1: enemy,
-    rectangle2: player
+    rectangle2: enemy,
+    rectangle1: player
 })&&
     enemy.isAttacking
 ){
@@ -219,7 +281,9 @@ window.addEventListener('keydown',(event)=>{
         case 'ArrowUp':
             enemy.velocity.y = -20
             break;
-        case 'ArrowDown':
+        case ';':
+            keys.socoLeve.pressed = true
+            enemy.lastKey = ';'
             enemy.attack()
             break;
     
@@ -250,6 +314,8 @@ window.addEventListener('keyup',(event)=>{
         break;
             case 'w':
             keys.w.pressed = false
+        case ';':
+            keys.socoLeve.pressed = false
         
     }
 })
